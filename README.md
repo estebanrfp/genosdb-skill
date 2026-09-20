@@ -1,5 +1,7 @@
 # genosdb-skill
 
+![The official GenosDB skill for AI coding agents: teach your agent GenosDB](assets/cover.png)
+
 The official skill for building applications on [GenosDB](https://github.com/estebanrfp/gdb) — the serverless, peer-to-peer graph database for the browser with a zero-trust Security Manager — for AI coding agents that support the Skills format (Claude Code, Cursor, and others).
 
 It gives the agent what it cannot get from a closed-source engine: the frozen API surface, the data-modeling and realtime-UI patterns, the security model, how to prove peer-to-peer sync in tests, and how to diagnose "it doesn't sync". Everything in it is derived from the public documentation and the engine's typings, and it ships in the same commit as the engine, so it cannot drift from the version it describes.
