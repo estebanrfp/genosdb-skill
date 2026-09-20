@@ -27,11 +27,11 @@ Drop `--global` to install it for the current project only. See `npx skills --he
 
 ## Sources of truth
 
-The skill compresses and points at, in order of authority: `types/index.d.ts` in the `genosdb` package, the [documentation index](https://github.com/estebanrfp/gdb/blob/main/docs/index.md), [CRYPTOGRAPHY.md](https://github.com/estebanrfp/gdb/blob/main/CRYPTOGRAPHY.md) and [SECURITY.md](https://github.com/estebanrfp/gdb/blob/main/SECURITY.md), the [CHANGELOG](https://github.com/estebanrfp/gdb/blob/main/CHANGELOG.md), and the [examples](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-examples.md). When the skill and a newer engine disagree, the CHANGELOG wins; the version the skill applies to is stated at the top of `SKILL.md`.
+The skill compresses and points at, in order of authority: `types/index.d.ts` in the `genosdb` package, the [documentation index](https://github.com/estebanrfp/gdb/blob/main/docs/index.md), [CRYPTOGRAPHY.md](https://github.com/estebanrfp/gdb/blob/main/CRYPTOGRAPHY.md) and [SECURITY.md](https://github.com/estebanrfp/gdb/blob/main/SECURITY.md), the [CHANGELOG](https://github.com/estebanrfp/gdb/blob/main/CHANGELOG.md), and the [examples](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-examples.md). When the skill and a newer engine disagree, the CHANGELOG wins.
 
 ## Versioning
 
-The source of the skill lives beside the engine and is published here on every release, so `SKILL.md` always names the engine version it was written against. If your `package.json` is newer than that line, update the skill.
+The source of the skill lives beside the engine and is published here with every release. When it and the engine you run disagree, the CHANGELOG wins.
 
 ## Contributing
 
