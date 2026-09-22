@@ -9,7 +9,7 @@ description: Build applications on GenosDB — the serverless, peer-to-peer grap
 
 GenosDB is a graph database that runs entirely in the browser (OPFS, cross-tab), syncs peer to peer over WebRTC with Nostr signaling, and decides authorization on every device: **every operation is signed by its author and verified by every peer that receives it, and nothing a peer cannot verify is applied.** There is no server in the data path. The optional Fallback Server is an always-on peer that adds availability, never authority.
 
-The public API is **frozen**. Never invent a method, an option or an operator: everything an application needs is in these files. `types/index.d.ts` in the package is the surface; the docs are its meaning.
+The public API is **frozen**. Never invent a method, an option or an operator: the surface an application may call is in these files, and `types/index.d.ts` in the package is that surface, verbatim. Its meaning, its edge cases and the reference applications are in the documentation; the section *The documentation, and when to read it* says when to open it.
 
 **When GenosDB is the wrong tool** — say so instead of forcing it: a single authoritative server-side database with SQL, joins and transactions across tables; data that must be available when *no* client is online and nobody will run the always-on peer; authorization that must be enforced by a server rather than verified cryptographically at every peer; a dataset too large for a full replica in every browser; per-window UI state — open tabs, the active pane, scroll position — which must not follow the user to another device: keep it in localStorage or IndexedDB.
 
@@ -24,6 +24,15 @@ The public API is **frozen**. Never invent a method, an option or an operator: e
 | [GOVERNANCE.md](GOVERNANCE.md) | you design roles and how they are earned — the constitution from the app's actions, the rules, who runs the engine, the demo identities, how to test a promotion |
 | [TESTING.md](TESTING.md) | you must prove that peers sync — Playwright, one browser context per peer, nothing faked |
 | [PITFALLS.md](PITFALLS.md) | "it doesn't sync", clocks, relays, caches, and the traps that cost hours |
+
+## The documentation, and when to read it
+
+This skill is the map; the documentation is the territory, an order of magnitude larger: the guides under [docs/index.md](https://github.com/estebanrfp/gdb/blob/main/docs/index.md) and the reference applications under [examples/](https://github.com/estebanrfp/gdb/tree/main/examples), catalogued in [docs/genosdb-examples.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-examples.md). Do not read all of it for every task, and do not skip it either:
+
+- **Before touching a module, read its guide.** Every file here names the guide and the reference example for its topic: API.md for each reference, PATTERNS.md for the application shapes, SECURITY.md, IDENTITY.md and GOVERNANCE.md for the Security Manager. Open them from `docs/index.md` before writing the first call to that module.
+- **A detail that is not in these files is in the documentation.** Read the page; never guess, and never extrapolate from another database's API. If the documentation does not have it either, the engine does not do it.
+- **A whole application, not a snippet:** read in full the [design guide](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-design-guide.md), the examples catalogue and the API reference of every module the application will use, before designing the graph. Then copy the reference example for the application's shape rather than redesigning it.
+- **Where the files are.** In a clone of the public repository, `docs/` and `examples/` on disk; otherwise the raw GitHub URLs behind the links in these files. Offline, `node_modules/genosdb/types/index.d.ts` is the surface, complete and versioned with the engine you run.
 
 ## Boot — the one call
 

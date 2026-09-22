@@ -18,7 +18,7 @@ Drop `--global` to install it for the current project only. See `npx skills --he
 
 | file | what it holds |
 |---|---|
-| `skills/genosdb/SKILL.md` | the entry point: what GenosDB is, the one boot call, the ten rules that prevent the usual disasters, when GenosDB is the wrong tool, how to check the bundle against its specification, and which file to read for what |
+| `skills/genosdb/SKILL.md` | the entry point: what GenosDB is, the one boot call, the ten rules that prevent the usual disasters, when GenosDB is the wrong tool, how to check the bundle against its specification, which file to read for what, and when to open the documentation |
 | `skills/genosdb/API.md` | the frozen surface — `gdb()` and its options, nodes and writes, reads and the query language, `db.room` channels and events, `db.sm` (identity, roles, ACLs, encrypted records, signed values, governance), the Fallback Server |
 | `skills/genosdb/PATTERNS.md` | modeling, realtime UI, pagination, ordered lists, presence, the reference example for each application shape, layout rules, the shipping checklist, bundling |
 | `skills/genosdb/SECURITY.md` | the threat model, the constitution, roles, ownership and ACLs, cryptographic confidentiality, passkeys, signed channel values, governance, and five things never to do |
