@@ -22,6 +22,7 @@ Drop `--global` to install it for the current project only. See `npx skills --he
 | `skills/genosdb/API.md` | the frozen surface — `gdb()` and its options, nodes and writes, reads and the query language, `db.room` channels and events, `db.sm` (identity, roles, ACLs, encrypted records, signed values, governance), the Fallback Server |
 | `skills/genosdb/PATTERNS.md` | modeling, realtime UI, pagination, ordered lists, presence, the reference example for each application shape, layout rules, the shipping checklist, bundling |
 | `skills/genosdb/SECURITY.md` | the threat model, the constitution, roles, ownership and ACLs, cryptographic confidentiality, passkeys, signed channel values, governance, and five things never to do |
+| `skills/genosdb/IDENTITY.md` | the identity door: the dialog and its modes, the three phases drawn from the security state, the phrase, the four actions, the identity view and the session chip, passkeys and resume |
 | `skills/genosdb/TESTING.md` | proving sync with Playwright: one browser context per peer, a fresh room per test, local discovery, no sleeps, sentinels, transport asserted with `getStats()`, passkeys headless, partitions, skewed clocks |
 | `skills/genosdb/PITFALLS.md` | "it doesn't sync" in order, and the traps that cost hours |
 
