@@ -12,7 +12,7 @@ The reference for anything visual is [docs/genosdb-design-guide.md](https://gith
 
 ## Parts of the graph (`scope`)
 
-When the graph divides into places a peer is in — the channels of a chat, the documents of a workspace, the lands of a world — `scope` puts each browser in the parts it follows, and connects it only with those who share one. Guide: [docs/genosdb-partial-replica.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-partial-replica.md).
+When the graph divides into places a peer is in — the channels of a chat, the documents of a workspace, the lands of a world — `scope` puts each browser in the parts it follows, and connects it only with those who share one. Guide: [docs/genosdb-scope.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-scope.md).
 
 - **State it at boot, and again when the parts change**: `gdb(name, { rtc: true, scope: ["channel", followed] })`, then `db.scope("channel", followed)`. It is not persisted — keep what is followed in `localStorage`, so every tab of the browser is in the same parts: a replica is a browser, not a tab.
 - **Tag every node when it is created.** The field names its parts; what carries no field does not travel. Put what everyone needs in a part everyone is in.

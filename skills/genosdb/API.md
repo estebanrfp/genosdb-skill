@@ -1,6 +1,6 @@
 # API — the frozen surface
 
-Everything here is declared in `types/index.d.ts` and documented in [docs/genosdb-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-api-reference.md), [docs/sm-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/sm-api-reference.md), [docs/sm-acls-module.md](https://github.com/estebanrfp/gdb/blob/main/docs/sm-acls-module.md), [docs/governance.md](https://github.com/estebanrfp/gdb/blob/main/docs/governance.md), [docs/genosdb-partial-replica.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-partial-replica.md) and [docs/genosrtc-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosrtc-api-reference.md). Nothing else exists.
+Everything here is declared in `types/index.d.ts` and documented in [docs/genosdb-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-api-reference.md), [docs/sm-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/sm-api-reference.md), [docs/sm-acls-module.md](https://github.com/estebanrfp/gdb/blob/main/docs/sm-acls-module.md), [docs/governance.md](https://github.com/estebanrfp/gdb/blob/main/docs/governance.md), [docs/genosdb-scope.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-scope.md) and [docs/genosrtc-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosrtc-api-reference.md). Nothing else exists.
 
 ## `await gdb(name, options?)` → `db`
 
@@ -47,7 +47,7 @@ Concurrency: last-write-wins per node by the clock, deterministic tie. When two 
 
 ## `db.scope(field, values)` — being in parts of the graph
 
-Without it every peer of a name replicates the whole graph. With it a replica is in the parts it states: a sync room for each value of `field`, and in each the nodes whose value carries it — `{ channel: "design" }`, or a list for several parts, `{ zone: ["a", "b"] }`. Guide: [docs/genosdb-partial-replica.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-partial-replica.md); reference: `examples/channels.html`.
+Without it every peer of a name replicates the whole graph. With it a replica is in the parts it states: a sync room for each value of `field`, and in each the nodes whose value carries it — `{ channel: "design" }`, or a list for several parts, `{ zone: ["a", "b"] }`. Guide: [docs/genosdb-scope.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-scope.md); reference: `examples/channels.html`.
 
 - `db.scope(field, values)` — `values` is an array of strings or numbers; returns nothing. Entering a part brings what is there from whoever is in it; leaving one disconnects and **deletes nothing**. One field at a time; calling it again replaces the parts. Never called: the whole graph, as ever.
 - **Not persisted.** State it when the database opens — `gdb(name, { rtc: true, scope: [field, values] })` — and call `db.scope` again whenever the parts change.
