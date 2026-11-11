@@ -10,6 +10,17 @@ The reference for anything visual is [docs/genosdb-design-guide.md](https://gith
 - **Choose ids when identity matters** (a fixed `settings` node, `user:<address>`, a seed); let the engine generate them otherwise. Give shared nodes an `owner` so the id is `${owner}:…` and only that identity and its collaborators may change it.
 - **Metrics that drive governance live on the `user:<address>` node** — spread when writing it; only the identity itself or a superadmin may write it, and a self-written metric is self-service promotion (see SECURITY.md).
 
+## Parts of the graph (`scope`)
+
+When the graph divides into places a peer is in — the channels of a chat, the documents of a workspace, the lands of a world — `scope` puts each browser in the parts it follows, and connects it only with those who share one. Guide: [docs/genosdb-partial-replica.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-partial-replica.md).
+
+- **State it at boot, and again when the parts change**: `gdb(name, { rtc: true, scope: ["channel", followed] })`, then `db.scope("channel", followed)`. It is not persisted — keep what is followed in `localStorage`, so every tab of the browser is in the same parts: a replica is a browser, not a tab.
+- **Tag every node when it is created.** The field names its parts; what carries no field does not travel. Put what everyone needs in a part everyone is in.
+- **One `db.map` for the life of the page, with no part in its query.** Show what is followed of what the replica holds: following a part brings its history as `added`, unfollowing hides rows and deletes nothing.
+- **Move a node from a replica that is in both parts**, link a node only to one of the same part, and make sure someone is in each part: a part is held by the replicas that have been in it, and nowhere else.
+- **Each part costs a sync room** — its subscriptions on every signaling relay and a connection to each peer in it. Be in the parts the page shows, not in all of them.
+- **Limits today.** Granted roles and encrypted records do not travel, so it fits where a guest may write (no `sm`, or open roles); there is no `db.room`; a scoped replica never meets an unscoped one nor the Fallback Server; nothing is forgotten; and over the Cellular Mesh what a replica wrote of a part while out of it may not reach every peer of that part when it enters. Not access control.
+
 ## Realtime UI (design guide §7)
 
 - **One subscription per view, for the life of the page.** A subscription created inside the session callback replaces the live one and the other window freezes.
@@ -33,6 +44,7 @@ The reference for anything visual is [docs/genosdb-design-guide.md](https://gith
 - Presence comes from `peer:seen` / `peer:lost` (relay announces, `seen` as heartbeat), deduplicated; connections are `peer:join` / `peer:leave`.
 - A channel message proves nothing by itself. To show *who* is typing or pointing, send `await db.sm.sign({ kind: "caret", … })` and `verify` it on arrival; drop what does not verify. Never gate an action on a channel message — gate on the graph and the role.
 - Gate by degrees (guide §4.4): watching needs nothing · broadcasting a camera needs a signed-in identity · contributing needs a `write` role · moderating needs an elevated tier. Disable gated controls with a `title`; do not hide them.
+- With a `scope` there is no `db.room`: open the channel on `db.rooms.get(value).room`, one room a part.
 
 ## Application shapes and their reference examples
 
@@ -46,6 +58,7 @@ Every example is a single self-contained HTML file importing the engine, dark by
 | a document with sections or a tree | `outliner.html`, `traversal-depth.html` (`$edge`) |
 | a feed or a catalogue | `pagination.html` (the `$after` / `$before` / `$limit` reference), `infinite-scroll.html` |
 | a chat or a realtime feed | `chat.html`, `rbac-chat.html` |
+| a workspace of channels, a world of lands — one database, each browser in the parts it follows | `channels.html` (`scope`) |
 | presence, cursors, shared pointers | `cursor.html`, `share-locations.html`, `gaze-heatmap.html` |
 | media | `audio-streaming.html`, `video-streaming.html`, `file-streaming.html`, `obs-overlay.html` |
 | a spreadsheet or shared numbers | `spreadsheet.html`, `split-expenses.html` |

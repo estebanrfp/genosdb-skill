@@ -9,6 +9,7 @@
 5. **Clocks.** An operation stamped more than **two hours ahead** of a receiver's clock is refused, never clamped. A peer with a wrong clock sees its own writes and nobody else does.
 6. **One subscription** (not re-created on a session change); **no `leave()` on `pagehide`** (a frozen tab would drop the peer; the engine already leaves on `beforeunload`); **one channel** multiplexing every ephemeral kind.
 7. **A wire-breaking release** (the CHANGELOG marks each one) needs every peer of the room updated together. A superadmin signing in once re-signs its own older state.
+8. **With a `scope`.** A node without the field has no room and stays where it was written. Two replicas that share no value are never connected, and a scoped replica never meets an unscoped one nor the Fallback Server. Granted roles do not travel: every other identity is a `guest`. And `db.room` is undefined — presence and channels go through `db.rooms.get(value).room`.
 
 ## Traps
 
@@ -27,3 +28,5 @@
 - **`send` on a channel** rejects when it cannot deliver in a full-mesh room and always resolves in a Cellular Mesh room (best effort by design): never build retries on it.
 - **In a Cellular Mesh room `peer:leave` is a connection closing**, not a departure. Model presence on `peer:seen` / `peer:lost` (`seen` re-fires about every 30 s as a heartbeat) and deduplicate.
 - **`acls.set` refuses a `delete`-collaborator on its local guard**; that writer updates with `db.put({ ...node.value, … }, id)`, which every peer accepts because the policy fields travel unchanged.
+- **A `scope` is not persisted, and not a boundary.** State it when the database opens and whenever the parts change — otherwise the page opens in the whole graph. Any peer may be in any part: encrypt what must stay private.
+- **Leaving a part deletes nothing.** The replica keeps what it held, on disk too, and no call forgets it yet.

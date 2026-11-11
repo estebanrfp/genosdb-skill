@@ -19,8 +19,8 @@ Drop `--global` to install it for the current project only. See `npx skills --he
 | file | what it holds |
 |---|---|
 | `skills/genosdb/SKILL.md` | the entry point: what GenosDB is, the one boot call, the ten rules that prevent the usual disasters, when GenosDB is the wrong tool, how to check the bundle against its specification, which file to read for what, and when to open the documentation |
-| `skills/genosdb/API.md` | the frozen surface — `gdb()` and its options, nodes and writes, reads and the query language, `db.room` channels and events, `db.sm` (identity, roles, ACLs, encrypted records, signed values, governance), the Fallback Server |
-| `skills/genosdb/PATTERNS.md` | modeling, realtime UI, pagination, ordered lists, presence, the reference example for each application shape, layout rules, the shipping checklist, bundling |
+| `skills/genosdb/API.md` | the frozen surface — `gdb()` and its options, nodes and writes, reads and the query language, `db.scope` and the room of each part, `db.room` channels and events, `db.sm` (identity, roles, ACLs, encrypted records, signed values, governance), the Fallback Server |
+| `skills/genosdb/PATTERNS.md` | modeling, parts of the graph (`scope`), realtime UI, pagination, ordered lists, presence, the reference example for each application shape, layout rules, the shipping checklist, bundling |
 | `skills/genosdb/SECURITY.md` | the threat model, the constitution, roles, ownership and ACLs, cryptographic confidentiality, passkeys, signed channel values, governance, and five things never to do |
 | `skills/genosdb/GOVERNANCE.md` | how a role is earned and who signs it: the constitution before the rules, the rules and how the engine evaluates them, who runs the engine, the application side, testing it |
 | `skills/genosdb/IDENTITY.md` | the identity door: the dialog and its modes, the three phases drawn from the security state, the phrase, the four actions, the identity view and the session chip, passkeys and resume |

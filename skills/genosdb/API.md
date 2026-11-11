@@ -1,6 +1,6 @@
 # API — the frozen surface
 
-Everything here is declared in `types/index.d.ts` and documented in [docs/genosdb-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-api-reference.md), [docs/sm-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/sm-api-reference.md), [docs/sm-acls-module.md](https://github.com/estebanrfp/gdb/blob/main/docs/sm-acls-module.md), [docs/governance.md](https://github.com/estebanrfp/gdb/blob/main/docs/governance.md) and [docs/genosrtc-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosrtc-api-reference.md). Nothing else exists.
+Everything here is declared in `types/index.d.ts` and documented in [docs/genosdb-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-api-reference.md), [docs/sm-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/sm-api-reference.md), [docs/sm-acls-module.md](https://github.com/estebanrfp/gdb/blob/main/docs/sm-acls-module.md), [docs/governance.md](https://github.com/estebanrfp/gdb/blob/main/docs/governance.md), [docs/genosdb-partial-replica.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-partial-replica.md) and [docs/genosrtc-api-reference.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosrtc-api-reference.md). Nothing else exists.
 
 ## `await gdb(name, options?)` → `db`
 
@@ -12,6 +12,7 @@ Everything here is declared in `types/index.d.ts` and documented in [docs/genosd
 | `debug` | `true` shows the engine's logs (`[SYNC-AUTH] … denied`, persistence, sync). Default `false`. |
 | `saveDelay` | Debounce, ms, for persisting graph and oplog; flushed when the page goes hidden. Default `200`. |
 | `oplogSize` | Operations kept for delta sync. Default `200`. |
+| `scope` | `[field, values]` — open in those parts of the graph instead of all of it, as `db.scope(field, values)`; stated here, the replica never joins the room of the whole graph. Needs `rtc`. |
 
 Relays: with no `relayUrls` the peer fetches the public list at boot (cached in localStorage) and says so in the console when it cannot; one relay is enough. `turnConfig` for NAT traversal. Cellular Mesh (`cells`) is for rooms of 100+ peers: the same setting on every peer and on the Fallback Server (`--cells`); small rooms are one cell.
 
@@ -44,7 +45,17 @@ Concurrency: last-write-wins per node by the clock, deterministic tie. When two 
 - Geo: `{ location: { $near: { latitude, longitude, radius /* km */ } } }` — the value carries `latitude`/`longitude` or `location.{latitude,longitude}`; a bounding box is `$between` on both.
 - `$edge`: the rest of the query selects the **start nodes**; `$edge: { … }` is applied to every **descendant** (outgoing edges, any depth, cycle-safe, missing targets skipped). The result is the matching descendants, deduplicated; `field / order / $limit` apply to them.
 
-## `db.room` — ephemeral traffic (present with `rtc`; `db.selfId` is this peer)
+## `db.scope(field, values)` — being in parts of the graph
+
+Without it every peer of a name replicates the whole graph. With it a replica is in the parts it states: a sync room for each value of `field`, and in each the nodes whose value carries it — `{ channel: "design" }`, or a list for several parts, `{ zone: ["a", "b"] }`. Guide: [docs/genosdb-partial-replica.md](https://github.com/estebanrfp/gdb/blob/main/docs/genosdb-partial-replica.md); reference: `examples/channels.html`.
+
+- `db.scope(field, values)` — `values` is an array of strings or numbers; returns nothing. Entering a part brings what is there from whoever is in it; leaving one disconnects and **deletes nothing**. One field at a time; calling it again replaces the parts. Never called: the whole graph, as ever.
+- **Not persisted.** State it when the database opens — `gdb(name, { rtc: true, scope: [field, values] })` — and call `db.scope` again whenever the parts change.
+- Peers that share no value are **never connected**. A node without the field has no room: it stays in the replica that wrote it.
+- `db.rooms` — a `Map` from value to `{ room }`, the sync room of each part. With a scope there is **no `db.room`**: presence and the application's own channels go through `db.rooms.get(value).room`. Without a scope it holds the whole graph's room under `undefined`.
+- Limits today: granted roles and encrypted records do not travel (a scoped replica sees every other identity as a `guest`, save the constitution's superadmins); a scoped replica never meets an unscoped one nor the Fallback Server; nothing is forgotten — the disk grows with every part visited. It is not access control: any peer may be in any part.
+
+## `db.room` — ephemeral traffic (present with `rtc` and no scope; `db.selfId` is this peer)
 
 - `const ch = db.room.channel(name)` — name UTF-8, at most 12 bytes. `ch.send(data, targets?, meta?, onProgress?)` (`meta` only with a binary payload; large payloads are chunked and compressed) · `ch.on("message", (data, peerId, meta) => …)` · `ch.on("progress", (fraction, peerId, meta) => …)` · `ch.off(event, handler)`.
 - Events on the room: `peer:join (peerId, type?)` and `peer:leave (peerId)` are **connections** (`type === "superpeer"` is the Fallback Server, informational only); `peer:seen (peerId, type?)` and `peer:lost` are **presence** by relay announces (`seen` re-fires as a heartbeat, `lost` is the explicit farewell); `stream:add (stream, peerId, meta)`, `track:add (track, stream, peerId, meta)`; Cellular Mesh: `mesh:state`, `mesh:peer-state`.
@@ -86,4 +97,4 @@ bun node_modules/genosdb/dist/genossrv.min.js <name> [--cells] [--room] [--relay
 | `GDB_SM_RULES` | governance rules as inline JSON, or a path to the same rules module the app uses — the engine then runs 24/7 |
 | `GDB_RELAY_URLS` | mirrors `rtc.relayUrls` |
 
-As a module: `gdbServer(name, options, dbPath)` with the same option shapes as `gdb()`. Redeploy it together with the clients on every engine update.
+As a module: `gdbServer(name, options, dbPath)` with the same option shapes as `gdb()`. Redeploy it together with the clients on every engine update. A browser opened with a `scope` does not meet it: the server is in the room of the whole graph.

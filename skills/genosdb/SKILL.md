@@ -1,6 +1,6 @@
 ---
 name: genosdb
-description: Build applications on GenosDB — the serverless, peer-to-peer graph database for the browser with a zero-trust Security Manager. Use whenever code imports "genosdb", calls gdb(...), db.put / get / map / link, db.room channels, db.sm (roles, ownership, ACLs, passkeys, encrypted records, governance), or runs the Fallback Server (genossrv). Covers the frozen API, data modeling and realtime-UI patterns, the security model, how to prove peer-to-peer sync in tests, and how to diagnose "it doesn't sync".
+description: Build applications on GenosDB — the serverless, peer-to-peer graph database for the browser with a zero-trust Security Manager. Use whenever code imports "genosdb", calls gdb(...), db.put / get / map / link, db.scope (a replica in parts of the graph), db.room channels, db.sm (roles, ownership, ACLs, passkeys, encrypted records, governance), or runs the Fallback Server (genossrv). Covers the frozen API, data modeling and realtime-UI patterns, the security model, how to prove peer-to-peer sync in tests, and how to diagnose "it doesn't sync".
 ---
 
 # GenosDB — building applications
@@ -11,14 +11,14 @@ GenosDB is a graph database that runs entirely in the browser (OPFS, cross-tab),
 
 The public API is **frozen**. Never invent a method, an option or an operator: the surface an application may call is in these files, and `types/index.d.ts` in the package is that surface, verbatim. Its meaning, its edge cases and the reference applications are in the documentation; the section *The documentation, and when to read it* says when to open it.
 
-**When GenosDB is the wrong tool** — say so instead of forcing it: a single authoritative server-side database with SQL, joins and transactions across tables; data that must be available when *no* client is online and nobody will run the always-on peer; authorization that must be enforced by a server rather than verified cryptographically at every peer; a dataset too large for a full replica in every browser; per-window UI state — open tabs, the active pane, scroll position — which must not follow the user to another device: keep it in localStorage or IndexedDB.
+**When GenosDB is the wrong tool** — say so instead of forcing it: a single authoritative server-side database with SQL, joins and transactions across tables; data that must be available when *no* client is online and nobody will run the always-on peer; authorization that must be enforced by a server rather than verified cryptographically at every peer; a dataset too large for a full replica in every browser, with no parts a browser could follow instead (`db.scope`); per-window UI state — open tabs, the active pane, scroll position — which must not follow the user to another device: keep it in localStorage or IndexedDB.
 
 ## Files
 
 | file | read when |
 |---|---|
-| [API.md](API.md) | you write any call — boot options, nodes, queries, `db.room`, `db.sm`, the Fallback Server |
-| [PATTERNS.md](PATTERNS.md) | you model data, build a realtime UI, paginate, order a list, do presence, pick an app shape, bundle |
+| [API.md](API.md) | you write any call — boot options, nodes, queries, `db.scope`, `db.room`, `db.sm`, the Fallback Server |
+| [PATTERNS.md](PATTERNS.md) | you model data, divide the graph into parts (`scope`), build a realtime UI, paginate, order a list, do presence, pick an app shape, bundle |
 | [SECURITY.md](SECURITY.md) | the app has users — roles, ownership, ACLs, encryption, passkeys, governance, and the threat model |
 | [IDENTITY.md](IDENTITY.md) | you build registration, login, recovery or passkeys — the identity door, its phases drawn from the security state, the phrase, the session chip |
 | [GOVERNANCE.md](GOVERNANCE.md) | you design roles and how they are earned — the constitution from the app's actions, the rules, who runs the engine, the demo identities, how to test a promotion |
@@ -45,7 +45,7 @@ const db = await gdb("room-name", {            // never `new GDB()`; top-level a
 })
 ```
 
-The **name is the room**: every peer that opens the same name replicates the whole graph. Separate sharing scopes are separate names. One instance per page.
+The **name is the room**: every peer that opens the same name replicates the whole graph — unless it states a `scope` and is in parts of it instead, each a sync room of its own ([API.md](API.md), [PATTERNS.md](PATTERNS.md)). What must not be shared goes under another name: a `scope` is a choice any peer makes, never a boundary. One instance per page.
 
 ## Ten rules that prevent the usual disasters
 
@@ -55,7 +55,7 @@ The **name is the room**: every peer that opens the same name replicates the who
 4. **A guest's write succeeds locally and every other peer refuses it.** With `sm`, a new identity is a `guest` until a superadmin's signed decision promotes it. "It doesn't sync" is almost always this: fix the constitution, not the `map` wiring.
 5. **Give nodes an owner.** `value.owner = address` makes the engine name the id `${owner}:…`, and every peer enforces that only the owner and its collaborators may create, write, link or delete it.
 6. **A collaborator writes content, never policy.** A non-owner's write must carry `owner`, `collaborators` and the envelope table unchanged, or every peer refuses it. Spreading the previous value does exactly that.
-7. **The room replicates everything to everyone.** Confidentiality is cryptographic — encrypted records (`db.sm.put`) or a sealed field (`encryptDataForCurrentUser`) — never topological.
+7. **The room replicates everything to everyone.** Confidentiality is cryptographic — encrypted records (`db.sm.put`) or a sealed field (`encryptDataForCurrentUser`) — never topological. A `scope` narrows what a replica syncs, never who may read it.
 8. **Channel messages are transport, not facts.** Presence, cursors, typing go on `db.room.channel`; anything that must persist or be authorized goes in the graph. To label who is saying something *now*, `db.sm.sign` / `db.sm.verify`.
 9. **A peer's value renders as text.** `textContent`, never `innerHTML`, for anything another peer wrote: no server sits between the writer and the reader.
 10. **Never `alert()`, `confirm()` or `prompt()`** in a syncing page: they block the thread and the sync being demonstrated. A toast for results, `<dialog method="dialog">` for questions.

@@ -44,7 +44,7 @@ With `sm` on, a node whose value carries `owner` is enforced on every path: only
 
 ## Confidentiality is cryptographic
 
-The room replicates everything to everyone; the database name decides what travels, the envelope decides who reads. Two patterns:
+The room replicates everything to everyone; the database name decides what travels, the envelope decides who reads. A `scope` only narrows what a replica syncs — any peer may be in any part — so it is never a control; and with one, granted roles do not travel: every other identity is a `guest`, save the constitution's superadmins. Two patterns:
 
 - **Encrypted record** — `db.sm.put(value, id?)` seals the whole value under a per-record key wrapped for each reader; `db.sm.get` decrypts for any session holding an envelope; `db.sm.map` decrypts then queries, without realtime. Sharing is `acls.grant` (the target must have signed in once on any peer, or it throws `has no published key yet`); unsharing is `acls.revoke`, which rotates the key: forward-only — what a reader could open while authorized, it may have copied. Envelopes carry a format version; a record sealed by an earlier format is refused with its reason and re-saved once, never opened silently.
 - **Sealed field** — `encryptDataForCurrentUser(data)` stores a string in an ordinary, public, reactive node; `decryptDataForCurrentUser` throws for anyone else, which is the ownership test. Cannot be shared. Use it when the node must stay live under `db.map` and only one field is private.
